@@ -153,12 +153,11 @@ dword_result_t NtAllocateVirtualMemory(lpdword_t base_addr_ptr,
     return X_STATUS_NO_MEMORY;
   }
 
-  // Zero memory, if needed.
-  if (address && !(alloc_type & X_MEM_NOZERO)) {
-    if (alloc_type & X_MEM_COMMIT) {
-      kernel_memory()->Zero(address, adjusted_size);
-    }
-  }
+if (address && !(alloc_type & X_MEM_NOZERO)) {
+  if (alloc_type & X_MEM_COMMIT && !(protect_bits & X_PAGE_NOACCESS | X_PAGE_READONLY)) {
+    kernel_memory()->Zero(address, adjusted_size); 
+  } 
+}
 
   XELOGD("NtAllocateVirtualMemory = {:08X}", address);
 
